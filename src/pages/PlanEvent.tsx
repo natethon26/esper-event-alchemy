@@ -39,9 +39,9 @@ const PlanEvent = () => {
         reasoning: "High concentration of target personas (IT Directors, CISOs) with strong historical ROI from similar events. Esper's competitive positioning is strong in this market segment.",
         suggestedApproach: "Booth + Sponsored Speaking Session",
         recommendedTeam: [
-          { name: "Sarah Chen", role: "VP Sales", reason: "Enterprise account expertise" },
-          { name: "Mike Rodriguez", role: "Solutions Engineer", reason: "Technical demos" },
-          { name: "Lisa Park", role: "Product Marketing", role: "Thought leadership" }
+          { name: "Sarah Chen", role: "VP Sales", expertise: "Enterprise account expertise" },
+          { name: "Mike Rodriguez", role: "Solutions Engineer", expertise: "Technical demos" },
+          { name: "Lisa Park", role: "Product Marketing", expertise: "Thought leadership" }
         ],
         keyTalkingPoints: [
           "Zero-touch device provisioning for enterprise scale",
@@ -212,7 +212,7 @@ const PlanEvent = () => {
                             <p className="font-medium text-slate-900">{member.name}</p>
                             <p className="text-sm text-slate-600">{member.role}</p>
                           </div>
-                          <p className="text-xs text-slate-500 max-w-32 text-right">{member.reason}</p>
+                          <p className="text-xs text-slate-500 max-w-32 text-right">{member.expertise}</p>
                         </div>
                       ))}
                     </div>
