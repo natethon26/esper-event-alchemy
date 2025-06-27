@@ -6,7 +6,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: "/esper-event-alchemy/", // Updated to match your actual repo name
+  base: mode === 'production' ? "/esper-event-alchemy/" : "/",
   server: {
     host: "::",
     port: 8080,
