@@ -1,14 +1,14 @@
-
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Mic, Square, Play, Download, UserPlus, ExternalLink } from 'lucide-react';
+import { Mic, Square, Play, Download, UserPlus, ExternalLink, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useEventContext } from '@/contexts/EventContext';
+import AdminAuth from '@/components/AdminAuth';
+import SalesforceContactSearch from '@/components/SalesforceContactSearch';
 
 const VoiceNotes = () => {
   const { toast } = useToast();
@@ -16,6 +16,8 @@ const VoiceNotes = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(currentEvent?.id || '');
   const [salesforceContactId, setSalesforceContactId] = useState('');
+  const [isAdminAuthorized, setIsAdminAuthorized] = useState(false);
+  const [showAdminAuth, setShowAdminAuth] = useState(false);
   const [recordings, setRecordings] = useState([
     {
       id: 1,
@@ -47,6 +49,18 @@ const VoiceNotes = () => {
     const selectedEvent = eventBriefs.find(event => event.id === eventId);
     setCurrentEvent(selectedEvent || null);
     setSelectedEventId(eventId);
+  };
+
+  const handleAdminAccess = () => {
+    if (isAdminAuthorized) {
+      setIsAdminAuthorized(false);
+      toast({
+        title: "Admin Access Revoked",
+        description: "Salesforce integration features are now hidden.",
+      });
+    } else {
+      setShowAdminAuth(true);
+    }
   };
 
   const startRecording = () => {
@@ -115,8 +129,8 @@ const VoiceNotes = () => {
   const handleAttachToSalesforce = (recordingId: number) => {
     if (!salesforceContactId) {
       toast({
-        title: "Contact ID Required",
-        description: "Please enter a Salesforce Contact ID to attach the voice note.",
+        title: "Contact Required",
+        description: "Please select a Salesforce contact to attach the voice note.",
         variant: "destructive",
       });
       return;
@@ -124,7 +138,7 @@ const VoiceNotes = () => {
 
     toast({
       title: "Attaching to Salesforce",
-      description: `Attaching voice note to Salesforce contact ${salesforceContactId}...`,
+      description: "Attaching voice note to selected Salesforce contact...",
     });
 
     setTimeout(() => {
@@ -136,7 +150,7 @@ const VoiceNotes = () => {
       
       toast({
         title: "Attachment Complete",
-        description: `Voice note has been attached to Salesforce contact ${salesforceContactId}.`,
+        description: "Voice note has been attached to the Salesforce contact.",
       });
     }, 2000);
   };
@@ -156,6 +170,10 @@ const VoiceNotes = () => {
           <p className="text-slate-600">Record, transcribe, and manage your voice notes</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={handleAdminAccess} variant="outline" size="sm">
+            <Lock className="w-4 h-4 mr-2" />
+            {isAdminAuthorized ? 'Disable Admin' : 'Admin Mode'}
+          </Button>
           <Button onClick={handleExportToDrive} variant="outline" size="sm">
             <Download className="w-4 h-4 mr-2" />
             Export to Drive
@@ -191,34 +209,34 @@ const VoiceNotes = () => {
         </Card>
       )}
 
-      {/* Salesforce Integration */}
-      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-6">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
-            <UserPlus className="w-5 h-5 mr-2 text-blue-600" />
-            Salesforce Integration
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4 items-end">
-            <div className="flex-1">
-              <Label htmlFor="salesforce-contact" className="text-sm font-medium text-slate-700">
-                Salesforce Contact ID
-              </Label>
-              <Input
-                id="salesforce-contact"
-                value={salesforceContactId}
-                onChange={(e) => setSalesforceContactId(e.target.value)}
-                placeholder="Enter Salesforce Contact ID"
-                className="mt-1"
-              />
+      {/* Salesforce Integration - Only show if admin authorized */}
+      {isAdminAuthorized && (
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
+              <UserPlus className="w-5 h-5 mr-2 text-blue-600" />
+              Salesforce Integration
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-4">
+              <div>
+                <Label className="text-sm font-medium text-slate-700 mb-2 block">
+                  Select Salesforce Contact
+                </Label>
+                <SalesforceContactSearch
+                  value={salesforceContactId}
+                  onValueChange={setSalesforceContactId}
+                  placeholder="Search for a contact..."
+                />
+              </div>
+              <p className="text-sm text-slate-600">
+                Voice notes can be attached to Salesforce contact records for better lead management.
+              </p>
             </div>
-            <p className="text-sm text-slate-600">
-              Voice notes can be attached to Salesforce contact records for better lead management.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recording Interface */}
@@ -336,16 +354,18 @@ const VoiceNotes = () => {
                     <Button variant="outline" size="sm" className="text-xs">
                       View Full
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="text-xs"
-                      onClick={() => handleAttachToSalesforce(recording.id)}
-                      disabled={!salesforceContactId}
-                    >
-                      <UserPlus className="w-3 h-3 mr-1" />
-                      Attach to SF
-                    </Button>
+                    {isAdminAuthorized && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-xs"
+                        onClick={() => handleAttachToSalesforce(recording.id)}
+                        disabled={!salesforceContactId}
+                      >
+                        <UserPlus className="w-3 h-3 mr-1" />
+                        Attach to SF
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -353,6 +373,13 @@ const VoiceNotes = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Admin Authorization Modal */}
+      <AdminAuth
+        isOpen={showAdminAuth}
+        onClose={() => setShowAdminAuth(false)}
+        onAuthorized={() => setIsAdminAuthorized(true)}
+      />
     </div>
   );
 };
