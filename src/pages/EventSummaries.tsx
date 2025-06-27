@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Download, Search, Calendar, TrendingUp, Users, MessageSquare, ExternalLink } from 'lucide-react';
+import { Search, Calendar, TrendingUp, Users, MessageSquare, ExternalLink, Sparkles, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const EventSummaries = () => {
@@ -14,6 +13,8 @@ const EventSummaries = () => {
   const [selectedDay, setSelectedDay] = useState('day-1');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
 
   // Mock data for demonstration
   const dailySummaries = {
@@ -101,39 +102,119 @@ const EventSummaries = () => {
     }, 2000);
   };
 
-  const handleExportCSV = () => {
-    toast({
-      title: "Export Started",
-      description: "Your lead data CSV is being generated and will download shortly.",
-    });
-  };
-
   const handleGoogleDriveSync = () => {
     toast({
-      title: "Google Drive Sync",
-      description: "Lead data has been uploaded to your connected Google Drive folder.",
+      title: "Exporting & Syncing...",
+      description: "Generating CSV and uploading to Google Drive...",
     });
+
+    // Simulate export and sync process
+    setTimeout(() => {
+      toast({
+        title: "Export & Sync Complete",
+        description: "Lead data CSV has been generated and uploaded to your Google Drive folder.",
+      });
+    }, 2500);
+  };
+
+  const handleGenerateAISummary = async () => {
+    setIsGeneratingSummary(true);
+    
+    // Simulate AI summary generation
+    setTimeout(() => {
+      const mockSummary = `**Day ${selectedDay === 'day-1' ? '1' : '2'} Event Summary - ${currentSummary.date}**
+
+**Key Highlights:**
+• Generated ${currentSummary.totalLeads} total leads with ${Math.round((currentSummary.engagedLeads / currentSummary.totalLeads) * 100)}% engagement rate
+• Healthcare and Retail sectors showed highest interest levels
+• Strong focus on Android device management and security compliance
+
+**Top Performing Themes:**
+${currentSummary.topConversationThemes.slice(0, 3).map(theme => 
+  `• ${theme.theme} (${theme.count} conversations, ${theme.engagement} engagement)`
+).join('\n')}
+
+**Sales Pipeline Impact:**
+• ${currentSummary.mostEngagedLeads.filter(lead => lead.score >= 90).length} hot leads ready for immediate follow-up
+• ${currentSummary.mostEngagedLeads.filter(lead => lead.score >= 80 && lead.score < 90).length} warm leads for nurturing campaigns
+• Key decision makers from ${currentSummary.mostEngagedLeads.filter(lead => lead.tags.some(tag => tag.includes('Executive') || tag.includes('Decision Maker'))).length} enterprise accounts engaged
+
+**Recommended Actions:**
+• Priority follow-up with ${currentSummary.mostEngagedLeads[0].name} at ${currentSummary.mostEngagedLeads[0].company} (Score: ${currentSummary.mostEngagedLeads[0].score})
+• Schedule technical demos for healthcare compliance discussions
+• Develop targeted content for retail kiosk use cases`;
+
+      setAiSummary(mockSummary);
+      setIsGeneratingSummary(false);
+      
+      toast({
+        title: "AI Summary Generated",
+        description: "Daily insights and recommendations have been generated based on your event data.",
+      });
+    }, 3000);
   };
 
   return (
     <div className="space-y-6">
-      {/* Header with Export Options */}
+      {/* Header with Sync Option */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold text-slate-900">Event Summaries</h2>
           <p className="text-slate-600">Daily insights, lead analytics, and conversation intelligence</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={handleExportCSV} variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Export CSV
-          </Button>
           <Button onClick={handleGoogleDriveSync} variant="outline" size="sm">
             <ExternalLink className="w-4 h-4 mr-2" />
-            Sync to Drive
+            Export & Sync to Drive
           </Button>
         </div>
       </div>
+
+      {/* AI Summary Generator */}
+      <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
+            <Sparkles className="w-5 h-5 mr-2 text-purple-600" />
+            AI Daily Summary Generator
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            <p className="text-sm text-slate-600">
+              Generate an AI-powered summary of the day's activities, lead insights, and strategic recommendations.
+            </p>
+            <Button 
+              onClick={handleGenerateAISummary}
+              disabled={isGeneratingSummary}
+              className="w-fit bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            >
+              {isGeneratingSummary ? (
+                <>
+                  <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Generating Summary...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate AI Summary for {currentSummary.date}
+                </>
+              )}
+            </Button>
+            
+            {aiSummary && (
+              <div className="mt-4 p-4 bg-white rounded-lg border">
+                <div className="flex items-center mb-3">
+                  <FileText className="w-4 h-4 mr-2 text-purple-600" />
+                  <h4 className="font-medium text-slate-900">AI Generated Summary</h4>
+                </div>
+                <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-line">
+                  {aiSummary}
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Semantic Search */}
       <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
