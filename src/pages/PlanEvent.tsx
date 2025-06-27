@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,11 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Download, CheckCircle, AlertCircle, Target, Users, MessageSquare } from 'lucide-react';
+import { Download, CheckCircle, AlertCircle, Target, Users, MessageSquare, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useEventContext } from '@/contexts/EventContext';
 
 const PlanEvent = () => {
   const { toast } = useToast();
+  const { addEventBrief } = useEventContext();
   const [eventName, setEventName] = useState('');
   const [audience, setAudience] = useState('');
   const [goals, setGoals] = useState('');
@@ -30,9 +31,14 @@ const PlanEvent = () => {
 
     setIsGenerating(true);
     
-    // Simulate AI processing with the new brief structure
     setTimeout(() => {
       const mockBrief = {
+        id: Date.now().toString(),
+        name: eventName,
+        audience,
+        goals,
+        productFocus,
+        createdAt: new Date().toISOString(),
         eventSummary: `${eventName} is a strategic opportunity to engage with ${audience} and position Esper as the leading device management platform for Android enterprise deployments.`,
         audiencePersonas: [
           {
@@ -79,6 +85,16 @@ const PlanEvent = () => {
         description: "Your strategic event brief is ready for team alignment.",
       });
     }, 3000);
+  };
+
+  const handleSaveBrief = () => {
+    if (eventBrief) {
+      addEventBrief(eventBrief);
+      toast({
+        title: "Event Brief Saved!",
+        description: "Your event brief has been saved and can be selected when capturing leads.",
+      });
+    }
   };
 
   const handleDownloadBrief = () => {
@@ -172,10 +188,16 @@ const PlanEvent = () => {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-xl font-semibold text-slate-900">Event Summary</CardTitle>
-                  <Button onClick={handleDownloadBrief} variant="outline" size="sm">
-                    <Download className="w-4 h-4 mr-2" />
-                    Download PDF
-                  </Button>
+                  <div className="flex space-x-2">
+                    <Button onClick={handleSaveBrief} variant="outline" size="sm">
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Brief
+                    </Button>
+                    <Button onClick={handleDownloadBrief} variant="outline" size="sm">
+                      <Download className="w-4 h-4 mr-2" />
+                      Download PDF
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
