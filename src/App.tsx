@@ -11,26 +11,34 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
+  console.log('=== APP.TSX DEBUG START ===');
   console.log('App component rendering...');
   console.log('Current location:', window.location.href);
   console.log('Hash:', window.location.hash);
+  console.log('Pathname:', window.location.pathname);
   
-  return (
-    <QueryClientProvider client={queryClient}>
-      <EventProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <HashRouter>
-            <Routes>
-              <Route path="/" element={<MainApp />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </HashRouter>
-        </TooltipProvider>
-      </EventProvider>
-    </QueryClientProvider>
-  );
+  try {
+    console.log('About to render App JSX...');
+    return (
+      <QueryClientProvider client={queryClient}>
+        <EventProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <HashRouter>
+              <Routes>
+                <Route path="/" element={<MainApp />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </HashRouter>
+          </TooltipProvider>
+        </EventProvider>
+      </QueryClientProvider>
+    );
+  } catch (error) {
+    console.error('Error in App component render:', error);
+    return <div>Error loading app: {String(error)}</div>;
+  }
 };
 
 export default App;

@@ -10,6 +10,9 @@ import SettingsPage from './SettingsPage';
 import EventSummaries from './EventSummaries';
 
 const MainApp = () => {
+  console.log('=== MAINAPP.TSX DEBUG ===');
+  console.log('MainApp component rendering...');
+  
   return (
     <div className="min-h-screen" style={{ background: '#7f56d9' }}>
       <div className="container mx-auto px-4 py-4 sm:py-8">
