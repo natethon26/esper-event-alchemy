@@ -22,8 +22,8 @@ const MainApp = () => {
               className="h-12 sm:h-16 mx-auto mb-4"
             />
           </div>
-          <h1 className="text-2xl sm:text-4xl font-bold mb-2" style={{ color: '#497784' }}>Esper Event Assistant</h1>
-          <p className="text-sm sm:text-lg" style={{ color: '#497784' }}>AI-powered event planning and lead management</p>
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2" style={{ color: '#429ef5' }}>Esper Event Assistant</h1>
+          <p className="text-sm sm:text-lg" style={{ color: '#429ef5' }}>AI-powered event planning and lead management</p>
         </div>
 
         {/* Main Tabs */}
