@@ -1,10 +1,12 @@
+
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Mic, Square, Play } from 'lucide-react';
+import { Mic, Square, Play, Download, UserPlus, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useEventContext } from '@/contexts/EventContext';
 
@@ -13,6 +15,7 @@ const VoiceNotes = () => {
   const { eventBriefs, currentEvent, setCurrentEvent } = useEventContext();
   const [isRecording, setIsRecording] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(currentEvent?.id || '');
+  const [salesforceContactId, setSalesforceContactId] = useState('');
   const [recordings, setRecordings] = useState([
     {
       id: 1,
@@ -22,7 +25,8 @@ const VoiceNotes = () => {
       tags: ["high-priority", "demo-request", "enterprise"],
       duration: "2:34",
       timestamp: "2 hours ago",
-      eventId: currentEvent?.id || ''
+      eventId: currentEvent?.id || '',
+      salesforceContactId: ''
     },
     {
       id: 2,
@@ -32,7 +36,8 @@ const VoiceNotes = () => {
       tags: ["competitor-intel", "vmware", "opportunity"],
       duration: "1:12",
       timestamp: "4 hours ago",
-      eventId: currentEvent?.id || ''
+      eventId: currentEvent?.id || '',
+      salesforceContactId: ''
     }
   ]);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -79,7 +84,8 @@ const VoiceNotes = () => {
         tags: ["new", "untagged"],
         duration: `${Math.floor(recordingTime / 60)}:${(recordingTime % 60).toString().padStart(2, '0')}`,
         timestamp: "Just now",
-        eventId: selectedEventId
+        eventId: selectedEventId,
+        salesforceContactId: ''
       };
       
       setRecordings(prev => [newRecording, ...prev]);
@@ -92,6 +98,49 @@ const VoiceNotes = () => {
     }, 3000);
   };
 
+  const handleExportToDrive = () => {
+    toast({
+      title: "Exporting to Google Drive",
+      description: "Generating voice notes export and uploading to Google Drive...",
+    });
+
+    setTimeout(() => {
+      toast({
+        title: "Export Complete",
+        description: "Voice notes have been exported and uploaded to your Google Drive folder.",
+      });
+    }, 2500);
+  };
+
+  const handleAttachToSalesforce = (recordingId: number) => {
+    if (!salesforceContactId) {
+      toast({
+        title: "Contact ID Required",
+        description: "Please enter a Salesforce Contact ID to attach the voice note.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Attaching to Salesforce",
+      description: `Attaching voice note to Salesforce contact ${salesforceContactId}...`,
+    });
+
+    setTimeout(() => {
+      setRecordings(prev => prev.map(recording => 
+        recording.id === recordingId 
+          ? { ...recording, salesforceContactId }
+          : recording
+      ));
+      
+      toast({
+        title: "Attachment Complete",
+        description: `Voice note has been attached to Salesforce contact ${salesforceContactId}.`,
+      });
+    }, 2000);
+  };
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -99,7 +148,21 @@ const VoiceNotes = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto p-4">
+      {/* Export Actions */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900">Voice Notes</h2>
+          <p className="text-slate-600">Record, transcribe, and manage your voice notes</p>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={handleExportToDrive} variant="outline" size="sm">
+            <Download className="w-4 h-4 mr-2" />
+            Export to Drive
+          </Button>
+        </div>
+      </div>
+
       {/* Event Selection */}
       {eventBriefs.length > 0 && (
         <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-6">
@@ -128,7 +191,36 @@ const VoiceNotes = () => {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Salesforce Integration */}
+      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-6">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
+            <UserPlus className="w-5 h-5 mr-2 text-blue-600" />
+            Salesforce Integration
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row gap-4 items-end">
+            <div className="flex-1">
+              <Label htmlFor="salesforce-contact" className="text-sm font-medium text-slate-700">
+                Salesforce Contact ID
+              </Label>
+              <Input
+                id="salesforce-contact"
+                value={salesforceContactId}
+                onChange={(e) => setSalesforceContactId(e.target.value)}
+                placeholder="Enter Salesforce Contact ID"
+                className="mt-1"
+              />
+            </div>
+            <p className="text-sm text-slate-600">
+              Voice notes can be attached to Salesforce contact records for better lead management.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recording Interface */}
         <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader>
@@ -136,22 +228,22 @@ const VoiceNotes = () => {
           </CardHeader>
           <CardContent className="text-center">
             <div className="mb-8">
-              <div className={`w-32 h-32 mx-auto rounded-full flex items-center justify-center transition-all duration-300 ${
+              <div className={`w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-full flex items-center justify-center transition-all duration-300 ${
                 isRecording 
                   ? 'bg-gradient-to-r from-red-500 to-orange-500 animate-pulse' 
                   : 'bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600'
               }`}>
                 {isRecording ? (
-                  <Square className="w-12 h-12 text-white" />
+                  <Square className="w-8 h-8 sm:w-12 sm:h-12 text-white" />
                 ) : (
-                  <Mic className="w-12 h-12 text-white" />
+                  <Mic className="w-8 h-8 sm:w-12 sm:h-12 text-white" />
                 )}
               </div>
             </div>
 
             {isRecording && (
               <div className="mb-6">
-                <div className="text-2xl font-bold text-red-600 mb-2">
+                <div className="text-xl sm:text-2xl font-bold text-red-600 mb-2">
                   {formatTime(recordingTime)}
                 </div>
                 <div className="flex justify-center">
@@ -182,18 +274,18 @@ const VoiceNotes = () => {
             >
               {isRecording ? (
                 <>
-                  <Square className="w-5 h-5 mr-2" />
-                  Stop Recording
+                  <Square className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="text-sm sm:text-base">Stop Recording</span>
                 </>
               ) : (
                 <>
-                  <Mic className="w-5 h-5 mr-2" />
-                  Start Recording
+                  <Mic className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="text-sm sm:text-base">Start Recording</span>
                 </>
               )}
             </Button>
 
-            <p className="text-sm text-slate-500 mt-4">
+            <p className="text-xs sm:text-sm text-slate-500 mt-4">
               {isRecording 
                 ? "Recording in progress... Click stop when finished."
                 : "Click to start recording your voice note. AI will automatically transcribe and summarize."
@@ -211,12 +303,12 @@ const VoiceNotes = () => {
             {recordings.map((recording) => (
               <div key={recording.id} className="p-4 border border-slate-200 rounded-lg hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-medium text-slate-900">{recording.title}</h3>
-                  <span className="text-xs text-slate-500">{recording.timestamp}</span>
+                  <h3 className="font-medium text-slate-900 text-sm sm:text-base">{recording.title}</h3>
+                  <span className="text-xs text-slate-500 whitespace-nowrap ml-2">{recording.timestamp}</span>
                 </div>
                 
                 <div className="mb-3">
-                  <p className="text-sm text-slate-600 mb-2">{recording.summary}</p>
+                  <p className="text-xs sm:text-sm text-slate-600 mb-2 line-clamp-2">{recording.summary}</p>
                   <div className="flex flex-wrap gap-1">
                     {recording.tags.map((tag, index) => (
                       <Badge key={index} variant="secondary" className="text-xs">
@@ -224,17 +316,35 @@ const VoiceNotes = () => {
                       </Badge>
                     ))}
                   </div>
+                  {recording.salesforceContactId && (
+                    <div className="mt-2">
+                      <Badge variant="outline" className="text-xs">
+                        <ExternalLink className="w-3 h-3 mr-1" />
+                        SF: {recording.salesforceContactId}
+                      </Badge>
+                    </div>
+                  )}
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                   <span className="text-xs text-slate-500">Duration: {recording.duration}</span>
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
+                  <div className="flex flex-wrap gap-1">
+                    <Button variant="outline" size="sm" className="text-xs">
                       <Play className="w-3 h-3 mr-1" />
                       Play
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="text-xs">
                       View Full
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-xs"
+                      onClick={() => handleAttachToSalesforce(recording.id)}
+                      disabled={!salesforceContactId}
+                    >
+                      <UserPlus className="w-3 h-3 mr-1" />
+                      Attach to SF
                     </Button>
                   </div>
                 </div>

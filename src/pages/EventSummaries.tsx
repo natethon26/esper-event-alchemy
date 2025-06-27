@@ -155,14 +155,12 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 max-w-7xl mx-auto">
       {/* Header with Sync Option */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900">Event Summaries</h2>
-          <p className="text-slate-600">Daily insights, lead analytics, and conversation intelligence</p>
-        </div>
-        <div className="flex gap-2">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Event Summaries</h2>
+        <p className="text-slate-600 text-sm sm:text-base mb-4">Daily insights, lead analytics, and conversation intelligence</p>
+        <div className="flex justify-center">
           <Button onClick={handleGoogleDriveSync} variant="outline" size="sm">
             <ExternalLink className="w-4 h-4 mr-2" />
             Export & Sync to Drive
@@ -186,7 +184,7 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
             <Button 
               onClick={handleGenerateAISummary}
               disabled={isGeneratingSummary}
-              className="w-fit bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              className="w-full sm:w-fit bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
             >
               {isGeneratingSummary ? (
                 <>
@@ -207,7 +205,7 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
                   <FileText className="w-4 h-4 mr-2 text-purple-600" />
                   <h4 className="font-medium text-slate-900">AI Generated Summary</h4>
                 </div>
-                <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-line">
+                <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-line text-sm">
                   {aiSummary}
                 </div>
               </div>
@@ -225,7 +223,7 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2 mb-4">
+          <div className="flex flex-col sm:flex-row gap-2 mb-4">
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -233,7 +231,7 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
               className="flex-1"
               onKeyPress={(e) => e.key === 'Enter' && handleSemanticSearch()}
             />
-            <Button onClick={handleSemanticSearch} disabled={isSearching}>
+            <Button onClick={handleSemanticSearch} disabled={isSearching} className="w-full sm:w-auto">
               {isSearching ? (
                 <>
                   <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -253,13 +251,13 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
               <h4 className="font-medium text-slate-900">Search Results</h4>
               {searchResults.map((result, index) => (
                 <div key={index} className="p-4 bg-slate-50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <h5 className="font-medium text-slate-900">{result.lead}</h5>
-                    <Badge variant="secondary">Score: {(result.relevanceScore * 100).toFixed(0)}%</Badge>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                    <h5 className="font-medium text-slate-900 text-sm sm:text-base">{result.lead}</h5>
+                    <Badge variant="secondary" className="text-xs w-fit">Score: {(result.relevanceScore * 100).toFixed(0)}%</Badge>
                   </div>
                   <p className="text-sm text-slate-700 mb-2">{result.snippet}</p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex gap-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex gap-1 flex-wrap">
                       {result.tags.map((tag: string, tagIndex: number) => (
                         <Badge key={tagIndex} variant="outline" className="text-xs">{tag}</Badge>
                       ))}
@@ -274,11 +272,12 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
       </Card>
 
       {/* Day Selection */}
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2 justify-center">
         <Button
           variant={selectedDay === 'day-1' ? 'default' : 'outline'}
           onClick={() => setSelectedDay('day-1')}
           size="sm"
+          className="w-full sm:w-auto"
         >
           Day 1 - March 15
         </Button>
@@ -286,13 +285,14 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
           variant={selectedDay === 'day-2' ? 'default' : 'outline'}
           onClick={() => setSelectedDay('day-2')}
           size="sm"
+          className="w-full sm:w-auto"
         >
           Day 2 - March 16
         </Button>
       </div>
 
       {/* Daily Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
         <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
@@ -303,15 +303,15 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
           <CardContent>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-slate-600">Total Leads</span>
+                <span className="text-slate-600 text-sm">Total Leads</span>
                 <span className="font-semibold">{currentSummary.totalLeads}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Engaged Leads</span>
+                <span className="text-slate-600 text-sm">Engaged Leads</span>
                 <span className="font-semibold text-green-600">{currentSummary.engagedLeads}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Engagement Rate</span>
+                <span className="text-slate-600 text-sm">Engagement Rate</span>
                 <span className="font-semibold">
                   {Math.round((currentSummary.engagedLeads / currentSummary.totalLeads) * 100)}%
                 </span>
@@ -331,8 +331,8 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
             <div className="space-y-2">
               {currentSummary.topConversationThemes.slice(0, 3).map((theme, index) => (
                 <div key={index} className="flex justify-between items-center">
-                  <span className="text-sm text-slate-700">{theme.theme}</span>
-                  <div className="flex items-center gap-2">
+                  <span className="text-xs sm:text-sm text-slate-700 truncate mr-2">{theme.theme}</span>
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     <span className="text-xs font-medium">{theme.count}</span>
                     <Badge 
                       variant={theme.engagement === 'High' ? 'default' : theme.engagement === 'Medium' ? 'secondary' : 'outline'}
@@ -357,19 +357,19 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
           <CardContent>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-slate-600">Hot Leads</span>
+                <span className="text-slate-600 text-sm">Hot Leads</span>
                 <span className="font-semibold text-red-600">
                   {currentSummary.mostEngagedLeads.filter(lead => lead.score >= 90).length}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Warm Leads</span>
+                <span className="text-slate-600 text-sm">Warm Leads</span>
                 <span className="font-semibold text-orange-600">
                   {currentSummary.mostEngagedLeads.filter(lead => lead.score >= 80 && lead.score < 90).length}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Follow-up</span>
+                <span className="text-slate-600 text-sm">Follow-up</span>
                 <span className="font-semibold text-blue-600">
                   {currentSummary.mostEngagedLeads.filter(lead => lead.score < 80).length}
                 </span>
@@ -387,42 +387,50 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Company</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Score</TableHead>
-                <TableHead>Tags</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentSummary.mostEngagedLeads.map((lead, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{lead.name}</TableCell>
-                  <TableCell>{lead.company}</TableCell>
-                  <TableCell>{lead.role}</TableCell>
-                  <TableCell>
-                    <Badge 
-                      variant={lead.score >= 90 ? 'default' : lead.score >= 80 ? 'secondary' : 'outline'}
-                    >
-                      {lead.score}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-1 flex-wrap">
-                      {lead.tags.map((tag, tagIndex) => (
-                        <Badge key={tagIndex} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs sm:text-sm">Name</TableHead>
+                  <TableHead className="text-xs sm:text-sm">Company</TableHead>
+                  <TableHead className="text-xs sm:text-sm">Role</TableHead>
+                  <TableHead className="text-xs sm:text-sm">Score</TableHead>
+                  <TableHead className="text-xs sm:text-sm">Tags</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {currentSummary.mostEngagedLeads.map((lead, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium text-xs sm:text-sm">{lead.name}</TableCell>
+                    <TableCell className="text-xs sm:text-sm">{lead.company}</TableCell>
+                    <TableCell className="text-xs sm:text-sm">{lead.role}</TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={lead.score >= 90 ? 'default' : lead.score >= 80 ? 'secondary' : 'outline'}
+                        className="text-xs"
+                      >
+                        {lead.score}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1 flex-wrap">
+                        {lead.tags.slice(0, 2).map((tag, tagIndex) => (
+                          <Badge key={tagIndex} variant="outline" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                        {lead.tags.length > 2 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{lead.tags.length - 2}
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
@@ -438,9 +446,10 @@ ${currentSummary.topConversationThemes.slice(0, 3).map(theme =>
             {currentSummary.topConversationThemes.map((theme, index) => (
               <div key={index} className="p-4 border border-slate-200 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-medium text-slate-900">{theme.theme}</h4>
+                  <h4 className="font-medium text-slate-900 text-sm sm:text-base">{theme.theme}</h4>
                   <Badge 
                     variant={theme.engagement === 'High' ? 'default' : theme.engagement === 'Medium' ? 'secondary' : 'outline'}
+                    className="text-xs"
                   >
                     {theme.engagement}
                   </Badge>
