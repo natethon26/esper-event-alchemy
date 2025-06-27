@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,9 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Camera, User, Upload } from 'lucide-react';
+import { Upload, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useEventContext } from '@/contexts/EventContext';
+import BusinessCardScanner from '@/components/BusinessCardScanner';
 
 const CaptureLead = () => {
   const { toast } = useToast();
@@ -35,27 +37,17 @@ const CaptureLead = () => {
     setLeadData(prev => ({ ...prev, eventId }));
   };
 
-  const handleBusinessCardScan = () => {
-    toast({
-      title: "Business Card Scanned",
-      description: "Processing card data using AI...",
-    });
-    
-    setTimeout(() => {
-      setLeadData(prev => ({
-        ...prev,
-        name: "John Smith",
-        company: "TechCorp Industries",
-        title: "IT Director",
-        email: "j.smith@techcorp.com",
-        phone: "+1 (555) 123-4567"
-      }));
-      
-      toast({
-        title: "Data Extracted",
-        description: "Business card information has been automatically filled in.",
-      });
-    }, 2000);
+  const handleBusinessCardData = (extractedData: {
+    name: string;
+    company: string;
+    title: string;
+    email: string;
+    phone: string;
+  }) => {
+    setLeadData(prev => ({
+      ...prev,
+      ...extractedData
+    }));
   };
 
   const handleSaveLead = () => {
@@ -129,15 +121,7 @@ const CaptureLead = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
-            <Button 
-              onClick={handleBusinessCardScan}
-              variant="outline" 
-              className="p-6 h-auto flex-col space-y-2 hover:bg-blue-50"
-            >
-              <Camera className="w-8 h-8 text-blue-600" />
-              <span className="text-sm font-medium">Scan Business Card</span>
-              <span className="text-xs text-slate-500">Auto-fill contact info</span>
-            </Button>
+            <BusinessCardScanner onDataExtracted={handleBusinessCardData} />
             
             <Button 
               variant="outline" 
