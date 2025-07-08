@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,21 +6,16 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, User, ExternalLink, Search } from 'lucide-react';
+import { Upload, User, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useEventContext } from '@/contexts/EventContext';
 import BusinessCardScanner from '@/components/BusinessCardScanner';
 import SalesforceContactSearch from '@/components/SalesforceContactSearch';
-import SalesforceCompanySearch from '@/components/SalesforceCompanySearch';
-import CompanyOverview from '@/components/CompanyOverview';
-import ContactSummary from '@/components/ContactSummary';
 
 const CaptureLead = () => {
   const { toast } = useToast();
   const { eventBriefs, currentEvent, setCurrentEvent } = useEventContext();
   const [salesforceContactId, setSalesforceContactId] = useState('');
-  const [selectedCompanyId, setSelectedCompanyId] = useState('');
-  const [companyContactId, setCompanyContactId] = useState('');
   const [leadData, setLeadData] = useState({
     name: '',
     company: '',
@@ -89,8 +83,6 @@ const CaptureLead = () => {
       eventId: currentEvent?.id || ''
     });
     setSalesforceContactId('');
-    setSelectedCompanyId('');
-    setCompanyContactId('');
   };
 
   const priorityColors = {
@@ -128,63 +120,6 @@ const CaptureLead = () => {
           </CardContent>
         </Card>
       )}
-
-      {/* Company Search Section */}
-      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-6">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
-            <Search className="w-5 h-5 mr-2 text-blue-600" />
-            Company Search
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">
-                Salesforce Company Search
-              </Label>
-              <SalesforceCompanySearch
-                value={selectedCompanyId}
-                onValueChange={setSelectedCompanyId}
-                placeholder="Search for companies in Salesforce..."
-              />
-            </div>
-            
-            {selectedCompanyId && (
-              <div>
-                <Label className="text-sm font-medium text-slate-700 mb-2 block">
-                  Company Contacts
-                </Label>
-                <SalesforceContactSearch
-                  value={companyContactId}
-                  onValueChange={setCompanyContactId}
-                  placeholder="Search contacts for this company..."
-                />
-              </div>
-            )}
-          </div>
-
-          {selectedCompanyId && (
-            <div className="space-y-4">
-              <div>
-                <Label className="text-sm font-medium text-slate-700 mb-2 block">
-                  Company Overview
-                </Label>
-                <CompanyOverview companyId={selectedCompanyId} />
-              </div>
-              
-              {companyContactId && (
-                <div>
-                  <Label className="text-sm font-medium text-slate-700 mb-2 block">
-                    Contact Summary
-                  </Label>
-                  <ContactSummary contactId={companyContactId} />
-                </div>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
 
       {/* Salesforce Integration */}
       <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-6">

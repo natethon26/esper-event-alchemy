@@ -2,12 +2,13 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, User, Mic, Settings, FileText } from 'lucide-react';
+import { Calendar, User, Mic, Settings, FileText, Building2 } from 'lucide-react';
 import PlanEvent from './PlanEvent';
 import CaptureLead from './CaptureLead';
 import VoiceNotes from './VoiceNotes';
 import SettingsPage from './SettingsPage';
 import EventSummaries from './EventSummaries';
+import CompanySearch from './CompanySearch';
 
 const MainApp = () => {
   console.log('=== MAINAPP.TSX DEBUG ===');
@@ -32,10 +33,14 @@ const MainApp = () => {
         {/* Main Tabs */}
         <div className="shadow-2xl rounded-lg">
           <Tabs defaultValue="capture-lead" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-auto">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-6 mb-6 sm:mb-8 h-auto">
               <TabsTrigger value="capture-lead" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3">
                 <User className="w-4 h-4" />
                 <span className="text-xs sm:text-sm">Capture Lead</span>
+              </TabsTrigger>
+              <TabsTrigger value="company-search" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3">
+                <Building2 className="w-4 h-4" />
+                <span className="text-xs sm:text-sm">Company Search</span>
               </TabsTrigger>
               <TabsTrigger value="voice-notes" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3">
                 <Mic className="w-4 h-4" />
@@ -58,6 +63,10 @@ const MainApp = () => {
             <div className="shadow-lg rounded-lg bg-white overflow-hidden">
               <TabsContent value="capture-lead" className="p-0">
                 <CaptureLead />
+              </TabsContent>
+
+              <TabsContent value="company-search" className="p-0">
+                <CompanySearch />
               </TabsContent>
 
               <TabsContent value="voice-notes" className="p-0">
