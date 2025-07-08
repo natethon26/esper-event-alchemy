@@ -8,9 +8,12 @@ import { Switch } from '@/components/ui/switch';
 import { RefreshCw, CheckCircle, AlertCircle, ExternalLink, Moon, Sun, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import AdminAuth from '@/components/AdminAuth';
+import EventSelector from '@/components/EventSelector';
+import { useEventContext } from '@/contexts/EventContext';
 
 const SettingsPage = () => {
   const { toast } = useToast();
+  const { currentEvent, setCurrentEvent, eventBriefs } = useEventContext();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -110,8 +113,42 @@ const SettingsPage = () => {
     }
   };
 
+  const handleEventChange = (eventId: string) => {
+    const event = eventBriefs.find(e => e.id === eventId);
+    if (event) {
+      setCurrentEvent(event);
+      toast({
+        title: "Event Selected",
+        description: `All new leads will be associated with "${event.name}".`,
+      });
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Event Selection */}
+      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg lg:col-span-2">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold text-slate-900">Event Association</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium text-slate-700 mb-2 block">
+                Select Event for Lead Capture
+              </Label>
+              <p className="text-xs text-slate-500 mb-4">
+                All new leads captured will be associated with the selected event.
+              </p>
+              <EventSelector 
+                eventId={currentEvent?.id || ''} 
+                onEventChange={handleEventChange}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Admin Mode Control */}
       <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader>
