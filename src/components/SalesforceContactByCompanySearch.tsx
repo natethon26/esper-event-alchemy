@@ -3,20 +3,36 @@ import React, { useState } from 'react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { Check, ChevronsUpDown, Briefcase } from 'lucide-react';
+import { Check, ChevronsUpDown, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { mockCompanies } from '@/utils/mockSalesforceData';
+import { getContactsByCompanyId } from '@/utils/mockSalesforceData';
 
-interface SalesforceCompanySearchProps {
+interface SalesforceContactByCompanySearchProps {
+  companyId: string;
   value: string;
   onValueChange: (value: string) => void;
   placeholder?: string;
 }
 
-const SalesforceCompanySearch = ({ value, onValueChange, placeholder = "Search companies..." }: SalesforceCompanySearchProps) => {
+const SalesforceContactByCompanySearch = ({ 
+  companyId, 
+  value, 
+  onValueChange, 
+  placeholder = "Search contacts..." 
+}: SalesforceContactByCompanySearchProps) => {
   const [open, setOpen] = useState(false);
   
-  const selectedCompany = mockCompanies.find(company => company.id === value);
+  const contacts = getContactsByCompanyId(companyId);
+  const selectedContact = contacts.find(contact => contact.id === value);
+
+  if (!companyId) {
+    return (
+      <Button variant="outline" disabled className="w-full justify-between">
+        Select a company first
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      </Button>
+    );
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -27,10 +43,10 @@ const SalesforceCompanySearch = ({ value, onValueChange, placeholder = "Search c
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {selectedCompany ? (
+          {selectedContact ? (
             <div className="flex items-center">
-              <Briefcase className="w-4 h-4 mr-2" />
-              <span>{selectedCompany.name} - {selectedCompany.industry}</span>
+              <User className="w-4 h-4 mr-2" />
+              <span>{selectedContact.name} - {selectedContact.title}</span>
             </div>
           ) : (
             placeholder
@@ -40,28 +56,28 @@ const SalesforceCompanySearch = ({ value, onValueChange, placeholder = "Search c
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <Command>
-          <CommandInput placeholder="Search companies..." />
+          <CommandInput placeholder="Search contacts..." />
           <CommandList>
-            <CommandEmpty>No companies found.</CommandEmpty>
+            <CommandEmpty>No contacts found for this company.</CommandEmpty>
             <CommandGroup>
-              {mockCompanies.map((company) => (
+              {contacts.map((contact) => (
                 <CommandItem
-                  key={company.id}
-                  value={`${company.name} ${company.industry} ${company.website}`}
+                  key={contact.id}
+                  value={`${contact.name} ${contact.title} ${contact.email}`}
                   onSelect={() => {
-                    onValueChange(company.id);
+                    onValueChange(contact.id);
                     setOpen(false);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === company.id ? "opacity-100" : "opacity-0"
+                      value === contact.id ? "opacity-100" : "opacity-0"
                     )}
                   />
                   <div className="flex flex-col">
-                    <span className="font-medium">{company.name}</span>
-                    <span className="text-xs text-muted-foreground">{company.industry} • {company.employees} employees</span>
+                    <span className="font-medium">{contact.name}</span>
+                    <span className="text-xs text-muted-foreground">{contact.title} • {contact.email}</span>
                   </div>
                 </CommandItem>
               ))}
@@ -73,4 +89,4 @@ const SalesforceCompanySearch = ({ value, onValueChange, placeholder = "Search c
   );
 };
 
-export default SalesforceCompanySearch;
+export default SalesforceContactByCompanySearch;

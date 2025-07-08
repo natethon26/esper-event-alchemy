@@ -4,13 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Search } from 'lucide-react';
 import SalesforceCompanySearch from '@/components/SalesforceCompanySearch';
-import SalesforceContactSearch from '@/components/SalesforceContactSearch';
+import SalesforceContactByCompanySearch from '@/components/SalesforceContactByCompanySearch';
 import CompanyOverview from '@/components/CompanyOverview';
 import ContactSummary from '@/components/ContactSummary';
 
 const CompanySearch = () => {
   const [selectedCompanyId, setSelectedCompanyId] = useState('');
   const [companyContactId, setCompanyContactId] = useState('');
+
+  const handleCompanyChange = (companyId: string) => {
+    setSelectedCompanyId(companyId);
+    setCompanyContactId(''); // Reset contact when company changes
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -29,7 +34,7 @@ const CompanySearch = () => {
               </Label>
               <SalesforceCompanySearch
                 value={selectedCompanyId}
-                onValueChange={setSelectedCompanyId}
+                onValueChange={handleCompanyChange}
                 placeholder="Search for companies in Salesforce..."
               />
             </div>
@@ -39,7 +44,8 @@ const CompanySearch = () => {
                 <Label className="text-sm font-medium text-slate-700 mb-2 block">
                   Company Contacts
                 </Label>
-                <SalesforceContactSearch
+                <SalesforceContactByCompanySearch
+                  companyId={selectedCompanyId}
                   value={companyContactId}
                   onValueChange={setCompanyContactId}
                   placeholder="Search contacts for this company..."

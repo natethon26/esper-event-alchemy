@@ -3,59 +3,14 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Building2, Users, Globe, TrendingUp } from 'lucide-react';
-
-interface CompanyData {
-  id: string;
-  name: string;
-  industry: string;
-  employees: string;
-  website: string;
-  revenue: string;
-  description: string;
-  keyTechnologies: string[];
-  recentNews: string[];
-}
+import { getCompanyById } from '@/utils/mockSalesforceData';
 
 interface CompanyOverviewProps {
   companyId: string;
 }
 
 const CompanyOverview = ({ companyId }: CompanyOverviewProps) => {
-  // Mock company data - in a real app, this would come from Salesforce API
-  const mockCompanyData: Record<string, CompanyData> = {
-    "001XX000003DHPqYAO": {
-      id: "001XX000003DHPqYAO",
-      name: "TechCorp Industries",
-      industry: "Technology",
-      employees: "1000-5000",
-      website: "techcorp.com",
-      revenue: "$50M-100M",
-      description: "Leading technology company specializing in enterprise software solutions and cloud infrastructure. Known for innovative approaches to digital transformation.",
-      keyTechnologies: ["Cloud Computing", "AI/ML", "Cybersecurity", "Data Analytics"],
-      recentNews: [
-        "Announced new partnership with major cloud provider",
-        "Launched AI-powered analytics platform",
-        "Expanded into European markets"
-      ]
-    },
-    "001XX000003DHPrYAO": {
-      id: "001XX000003DHPrYAO",
-      name: "InnovateTech Solutions",
-      industry: "Software",
-      employees: "500-1000",
-      website: "innovatetech.com",
-      revenue: "$25M-50M",
-      description: "Software development company focusing on custom enterprise applications and mobile solutions. Strong presence in fintech and healthcare sectors.",
-      keyTechnologies: ["Mobile Development", "Blockchain", "API Integration", "DevOps"],
-      recentNews: [
-        "Raised Series B funding round",
-        "Acquired mobile development startup",
-        "Launched new fintech platform"
-      ]
-    }
-  };
-
-  const companyData = mockCompanyData[companyId];
+  const companyData = getCompanyById(companyId);
 
   if (!companyData) {
     return (

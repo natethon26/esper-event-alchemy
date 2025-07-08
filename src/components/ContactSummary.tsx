@@ -3,115 +3,14 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { User, Mail, Phone, Calendar, FileText, DollarSign } from 'lucide-react';
-
-interface ContactData {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  title: string;
-  department: string;
-  lastContact: string;
-  conversationHistory: Array<{
-    date: string;
-    type: string;
-    summary: string;
-  }>;
-  activeDeals: Array<{
-    name: string;
-    value: string;
-    stage: string;
-  }>;
-  notes: string[];
-}
+import { getContactById } from '@/utils/mockSalesforceData';
 
 interface ContactSummaryProps {
   contactId: string;
 }
 
 const ContactSummary = ({ contactId }: ContactSummaryProps) => {
-  // Mock contact data - in a real app, this would come from Salesforce API
-  const mockContactData: Record<string, ContactData> = {
-    "003XX000004TmiQYAS": {
-      id: "003XX000004TmiQYAS",
-      name: "John Smith",
-      email: "john.smith@techcorp.com",
-      phone: "+1 (555) 123-4567",
-      title: "IT Director",
-      department: "Information Technology",
-      lastContact: "2024-01-15",
-      conversationHistory: [
-        {
-          date: "2024-01-15",
-          type: "Email",
-          summary: "Discussed cloud migration strategy and security concerns"
-        },
-        {
-          date: "2024-01-10",
-          type: "Phone Call",
-          summary: "Initial discovery call about IT infrastructure needs"
-        },
-        {
-          date: "2023-12-20",
-          type: "Meeting",
-          summary: "Attended demo of our cybersecurity platform"
-        }
-      ],
-      activeDeals: [
-        {
-          name: "TechCorp Cloud Migration",
-          value: "$150,000",
-          stage: "Proposal"
-        },
-        {
-          name: "Security Assessment",
-          value: "$25,000",
-          stage: "Negotiation"
-        }
-      ],
-      notes: [
-        "Primary decision maker for IT purchases",
-        "Concerned about data security and compliance",
-        "Budget approved for Q2 2024",
-        "Prefers detailed technical documentation"
-      ]
-    },
-    "003XX000004TmiRYAS": {
-      id: "003XX000004TmiRYAS",
-      name: "Sarah Johnson",
-      email: "sarah.j@innovatetech.com",
-      phone: "+1 (555) 987-6543",
-      title: "CTO",
-      department: "Technology",
-      lastContact: "2024-01-12",
-      conversationHistory: [
-        {
-          date: "2024-01-12",
-          type: "Video Call",
-          summary: "Technical deep-dive on API integration capabilities"
-        },
-        {
-          date: "2024-01-08",
-          type: "Email",
-          summary: "Shared technical specifications and requirements"
-        }
-      ],
-      activeDeals: [
-        {
-          name: "API Platform License",
-          value: "$75,000",
-          stage: "Closed Won"
-        }
-      ],
-      notes: [
-        "Highly technical, appreciates detailed demos",
-        "Previous customer with positive experience",
-        "Interested in enterprise-level solutions"
-      ]
-    }
-  };
-
-  const contactData = mockContactData[contactId];
+  const contactData = getContactById(contactId);
 
   if (!contactData) {
     return (
