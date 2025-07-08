@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,14 +6,16 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, User } from 'lucide-react';
+import { Upload, User, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useEventContext } from '@/contexts/EventContext';
 import BusinessCardScanner from '@/components/BusinessCardScanner';
+import SalesforceContactSearch from '@/components/SalesforceContactSearch';
 
 const CaptureLead = () => {
   const { toast } = useToast();
   const { eventBriefs, currentEvent, setCurrentEvent } = useEventContext();
+  const [salesforceContactId, setSalesforceContactId] = useState('');
   const [leadData, setLeadData] = useState({
     name: '',
     company: '',
@@ -60,9 +61,14 @@ const CaptureLead = () => {
       return;
     }
 
+    const leadWithSalesforce = {
+      ...leadData,
+      salesforceContactId: salesforceContactId || undefined
+    };
+
     toast({
       title: "Lead Captured!",
-      description: `Lead has been saved${currentEvent ? ` for ${currentEvent.name}` : ''} and will be synced to Salesforce.`,
+      description: `Lead has been saved${currentEvent ? ` for ${currentEvent.name}` : ''}${salesforceContactId ? ' and linked to Salesforce contact' : ''}.`,
     });
 
     setLeadData({
@@ -76,6 +82,7 @@ const CaptureLead = () => {
       source: 'booth-visit',
       eventId: currentEvent?.id || ''
     });
+    setSalesforceContactId('');
   };
 
   const priorityColors = {
@@ -113,6 +120,39 @@ const CaptureLead = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Salesforce Integration */}
+      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-6">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
+            <ExternalLink className="w-5 h-5 mr-2 text-blue-600" />
+            Salesforce Integration
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            <div>
+              <Label className="text-sm font-medium text-slate-700 mb-2 block">
+                Link to Salesforce Contact
+              </Label>
+              <SalesforceContactSearch
+                value={salesforceContactId}
+                onValueChange={setSalesforceContactId}
+                placeholder="Search for existing contact..."
+              />
+            </div>
+            <p className="text-sm text-slate-600">
+              Link this lead to an existing Salesforce contact for better lead management and follow-up.
+            </p>
+            {salesforceContactId && (
+              <Badge variant="outline" className="text-xs w-fit">
+                <ExternalLink className="w-3 h-3 mr-1" />
+                Linked to SF Contact: {salesforceContactId}
+              </Badge>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Business Card Scanner */}
       <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-6">
